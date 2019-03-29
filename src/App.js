@@ -41,12 +41,11 @@ class App extends Component {
   }
 
   updateDisplay = () => {
-    console.log('Updating Display...')
     //parse through this.state.data and put into this.state.display
     const newDisplay= [];
     let count = 0;
     let index = 0;
-    let data = this.state.data;
+    // let data = this.state.data;
     if (Object.entries(this.state.data).length !== 0){
       count = this.state.data.count;
     }
@@ -54,11 +53,10 @@ class App extends Component {
       newDisplay.push(this.state.data.results[index].name);
       index++;
       if (index === 9){
+        // still need to figure out more than 9 in display
         index = 0;
-        console.log(data.next);
         break;
         // data = data.next;
-
       }
     }
     this.setState({
@@ -101,20 +99,16 @@ class App extends Component {
     url += category;
     url += '/'
     url += queryString;
-    console.log('final url:',url);
     if (this.state.searchTermValid){  
-      console.log('Fetching...')
       fetch(url, {
         method: 'GET',
         headers: { 'content-type': 'application/json' }
         })
         .then(res=>res.json())
         .then((data)=> {
-          console.log('Fresh data: ',data);         /////////////////////////////console.log
           this.setState({
             searchTerm,
           }, ()=>this.updateData(data))
-          
         })
     }
     
