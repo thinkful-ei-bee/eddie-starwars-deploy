@@ -1,12 +1,14 @@
 import React from 'react';
 
+
 export default class Display extends React.Component {
 
   render(){
+    const list = this.props.names.map(data => <li>{data}</li>)
     return(
-      <>
-        <p> List goes here:</p>
-      </>
+      <ul>
+        {list}
+      </ul>
     )
   }
 }
