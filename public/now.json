@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "alias": "eddiebueno-starwars-app",
   "name": "starwars-app",
   "routes": [
       {
