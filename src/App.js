@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-import {Route} from 'react-router-dom';
-import {withRouter} from 'react-router-dom';
 import Header from './Header';
 import Display from './Display'
 import SearchBar from './SearchBar';
@@ -117,19 +115,18 @@ class App extends Component {
   render() {
     return (
       <main className="App">
-        <Route exact path='/' render ={()=> <Header />}/>
-        <Route exact path='/' 
-        render={(props)=> 
-          <SearchBar 
+        <Header />
+      
+        <SearchBar 
             onChange={this.updateSearchTerm} 
             onSubmit = {this.handleSubmit} 
             searchFormValid={this.searchFormValid}
-            message={this.state.validationMessages}/>} />
-        <Route exact path='/' render={(props)=> <Display names={this.state.display}/>} />
+            message={this.state.validationMessages}/>
+        <Display names={this.state.display}/>
         
       </main>
     );
   }
 }
 
-export default withRouter(App);
+export default App;
