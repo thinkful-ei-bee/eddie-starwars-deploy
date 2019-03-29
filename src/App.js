@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
-// import {Route} from 'react-router-dom';
+import {Route} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import Header from './Header';
-import Display from './Display';
+import Display from './Display'
 import SearchBar from './SearchBar';
 
 
@@ -23,13 +24,14 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <Header />
-        <SearchBar />
-        <Display />
-      </div>
+      <main className="App">
+        <Route exact path='/' render ={()=> <Header />}/>
+        <Route exact path='/' render={()=> <SearchBar />} />
+        <Route exact path='/' render={()=> <Display />} />
+        
+      </main>
     );
   }
 }
 
-export default App;
+export default withRouter(App);
