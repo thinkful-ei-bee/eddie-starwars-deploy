@@ -9,16 +9,22 @@ class App extends Component {
   constructor(props){
     super(props);
     this.state = {
+      loading: false,
       data: {},
       display: [],
       searchTerm: '',
-      searchCategory: '',
+      searchCategory: 'people',
       searchTermValid: false,
+      displayValid: false,
       validationMessages : {
         search: '',
         display: ''
       }
     }
+  }
+
+  componentDidUpdate = () => {
+
   }
 
   searchFormValid = () => {
@@ -29,6 +35,10 @@ class App extends Component {
 
   updateSearchTerm = (searchTerm) => {
     this.setState({searchTerm}, () => {this.validateSearchTerm(searchTerm)})
+  }
+
+  updateCategory = (category) => {
+    this.setState({category})
   }
 
   updateData = (data) =>{
@@ -43,12 +53,17 @@ class App extends Component {
     const newDisplay= [];
     let count = 0;
     let index = 0;
+    let accessor = 'name';
+    if (this.state.category === 'films'){
+      accessor = 'title';
+    }
+    console.log('Checking for films category: ',this.state.data);
     // let data = this.state.data;
     if (Object.entries(this.state.data).length !== 0){
       count = this.state.data.count;
     }
     while (index < count){
-      newDisplay.push(this.state.data.results[index].name);
+      newDisplay.push(this.state.data.results[index][accessor]);
       index++;
       if (index === 9){
         // still need to figure out more than 9 in display
@@ -90,18 +105,12 @@ class App extends Component {
 
   handleSubmit = (e) =>{
     e.preventDefault();
-    let url = 'https://swapi.co/api/';
+    
     const searchTerm = e.currentTarget['search-term'].value;
-    let queryString = `?search=${searchTerm}`;
     const category = e.currentTarget['category'].value;
-    url += category;
-    url += '/'
-    url += queryString;
+    
     if (this.state.searchTermValid){  
-      fetch(url, {
-        method: 'GET',
-        headers: { 'content-type': 'application/json' }
-        })
+      this.apiCall(searchTerm,category)
         .then(res=>res.json())
         .then((data)=> {
           this.setState({
@@ -109,7 +118,20 @@ class App extends Component {
           }, ()=>this.updateData(data))
         })
     }
-    
+  }
+
+  apiCall(searchTerm, category){
+
+    let url = 'https://swapi.co/api/';
+    let queryString = `?search=${searchTerm}`;
+    url += category;
+    url += '/'
+    url += queryString;
+
+    return fetch(url, {
+      method: 'GET',
+      headers: { 'content-type': 'application/json' }
+      })
   }
 
   render() {
@@ -121,7 +143,8 @@ class App extends Component {
             onChange={this.updateSearchTerm} 
             onSubmit = {this.handleSubmit} 
             searchFormValid={this.searchFormValid}
-            message={this.state.validationMessages}/>
+            message={this.state.validationMessages}
+            onChangeCategory={this.updateCategory}/>
         <Display names={this.state.display}/>
         
       </main>

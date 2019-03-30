@@ -8,7 +8,7 @@ export default class SearchBar extends React.Component {
       <form onSubmit={this.props.onSubmit}>
 
         <label htmlFor="category">Category: </label>
-        <select name="category">
+        <select name="category" onChange={e => this.props.onChangeCategory(e.currentTarget.value)}>
           <option value="people">Character</option>
           <option value="films">Films</option>
           <option value="planets">Planets</option>

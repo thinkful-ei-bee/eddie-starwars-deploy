@@ -1,0 +1,18 @@
+body {
+  margin: auto;
+  max-width: 1000px;
+  box-sizing: border-box;
+  padding: 15px;
+}
+
+header {
+  background-color: orange;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+p {
+  display: inline-block;
+  margin: 0 auto;
+}
+
