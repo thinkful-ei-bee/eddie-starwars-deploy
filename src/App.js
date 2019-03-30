@@ -25,6 +25,7 @@ class App extends Component {
 
   componentDidUpdate = () => {
     if (this.state.loading && !this.state.multiPage){  
+      console.log('Fetching...');
       this.apiCall(this.state.searchTerm,this.state.category)
         .then(res=>res.json())
         .then((data)=> {
