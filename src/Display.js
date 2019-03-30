@@ -5,10 +5,14 @@ export default class Display extends React.Component {
 
   render(){
     const list = this.props.names.map(data => <li key={data}>{data}</li>)
-    return(
-      <ul>
-        {list}
-      </ul>
-    )
+    if (this.props.loading){
+      return (<p>Loading...</p>)
+    }else{
+      return(
+        <ul>
+          {list}
+        </ul>
+      )
+    }
   }
 }

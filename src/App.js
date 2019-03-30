@@ -10,10 +10,10 @@ class App extends Component {
     super(props);
     this.state = {
       loading: false,
-      data: {},
       display: [],
       searchTerm: '',
       searchCategory: 'people',
+      multiPage: false,
       searchTermValid: false,
       displayValid: false,
       validationMessages : {
@@ -24,7 +24,13 @@ class App extends Component {
   }
 
   componentDidUpdate = () => {
-
+    if (this.state.loading && !this.state.multiPage){  
+      this.apiCall(this.state.searchTerm,this.state.category)
+        .then(res=>res.json())
+        .then((data)=> {
+          this.updateData(data)
+        })
+    }
   }
 
   searchFormValid = () => {
@@ -41,42 +47,39 @@ class App extends Component {
     this.setState({category})
   }
 
-  updateData = (data) =>{
-    this.setState({
-      ...this.state,
-      data,
-    }, this.updateDisplay)
-  }
-
-  updateDisplay = () => {
-    //parse through this.state.data and put into this.state.display
-    const newDisplay= [];
-    let count = 0;
-    let index = 0;
-    let accessor = 'name';
+  updateData = (data) => {
+    const displayList= [...this.state.display];
+    let key = 'name';
     if (this.state.category === 'films'){
-      accessor = 'title';
+      key = 'title';
     }
-    console.log('Checking for films category: ',this.state.data);
-    // let data = this.state.data;
-    if (Object.entries(this.state.data).length !== 0){
-      count = this.state.data.count;
+    let count = 0;
+    if (Object.entries(data).length !== 0){
+      count = data.results.length;
     }
-    while (index < count){
-      newDisplay.push(this.state.data.results[index][accessor]);
-      index++;
-      if (index === 9){
-        // still need to figure out more than 9 in display
-        index = 0;
-        break;
-        // data = data.next;
+    for (let index = 0; index < count; index++){
+      console.log()
+      displayList.push(data.results[index][key]);
       }
+      
+    if (data.next !== null){
+      this.apiCall(this.state.searchTerm,this.state.category,data.next)
+        .then(res=>res.json())
+        .then(resData => {
+          this.setState({
+            ...this.state,
+            multiPage: true,
+            display: displayList
+          },() => this.updateData(resData))
+        })
     }
-    this.setState({
-      ...this.state,
-      display: newDisplay
-    })
-
+    else{
+      this.setState({
+        ...this.state, 
+        display:displayList, 
+        loading:false,
+      })
+    }
   }
 
   validateSearchTerm = (fieldValue) =>{
@@ -88,14 +91,9 @@ class App extends Component {
       fieldErrors.search = 'A search term is required';
       hasError = true;
     } else {
-      // if (fieldValue.length < 2) {
-      //   fieldErrors.search = 'Term must be at least 2 characters long';
-      //   hasError = true;
-      // } else {
-        fieldErrors.search = '';
-        hasError = false;
+      fieldErrors.search = '';
+      hasError = false;
       }
-    // }
 
     this.setState({
       validationMessages: fieldErrors,
@@ -110,24 +108,24 @@ class App extends Component {
     const category = e.currentTarget['category'].value;
     
     if (this.state.searchTermValid){  
-      this.apiCall(searchTerm,category)
-        .then(res=>res.json())
-        .then((data)=> {
-          this.setState({
-            searchTerm,
-          }, ()=>this.updateData(data))
-        })
+      
+      this.setState({
+        searchTerm, category, display:[], loading:true,
+      })
     }
+    
   }
 
-  apiCall(searchTerm, category){
+  apiCall(searchTerm, category,complexUrl){
 
     let url = 'https://swapi.co/api/';
     let queryString = `?search=${searchTerm}`;
     url += category;
     url += '/'
     url += queryString;
-
+    if (complexUrl){
+      url = complexUrl
+    }
     return fetch(url, {
       method: 'GET',
       headers: { 'content-type': 'application/json' }
@@ -145,7 +143,9 @@ class App extends Component {
             searchFormValid={this.searchFormValid}
             message={this.state.validationMessages}
             onChangeCategory={this.updateCategory}/>
-        <Display names={this.state.display}/>
+        <Display 
+          names={this.state.display}
+          loading={this.state.loading}/>
         
       </main>
     );
